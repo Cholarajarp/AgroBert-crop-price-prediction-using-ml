@@ -380,10 +380,8 @@
             const el = id => document.getElementById(id);
             const authView = el('authView');
             const dashboardView = el('dashboardView');
-            // Changed to relative path so it uses the same server as serve.py
             const API_BASE_URL = ''; 
 
-            // apiFetch: Wrapper around fetch that handles common error cases
             const apiFetch = async (url, options = {}) => {
                 try {
                     let fullUrl;
@@ -489,10 +487,8 @@
                 }
             });
             
-            // Function to request location permission
             function requestLocationPermission() {
                 if (navigator.geolocation) {
-                    // Show a custom prompt modal
                     const permissionModal = document.createElement('div');
                     permissionModal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;';
                     
@@ -527,7 +523,6 @@
                                     const data = await res.json();
                                     console.log('[LOCATION] backend response', data);
                                     if (res.ok) {
-                                        // populate nearest market info if present
                                         if (data.nearest_market) {
                                             const info = `Nearest market: ${data.nearest_market.name} (${data.nearest_market.distance_km} km)`;
                                             el('locationInfo').innerText = info;
@@ -691,7 +686,6 @@
                 document.body.className = ''; 
                 dashboardView.style.display = 'flex';
                 
-                // Initialize dashboard with timeout to prevent freezing
                 setTimeout(() => {
                     try {
                         initializeDashboard();
@@ -852,7 +846,6 @@
                             const commodity1 = el('compareCommodity1').value;
                             const commodity2 = el('compareCommodity2').value;
                             
-                            // Simulate data for two commodities
                             const dates = Array.from({length: 12}, (_, i) => { const d = new Date(2025, i, 1); return d.toLocaleString('en-us', { month: 'short' }); });
                             const prices1 = Array.from({length: 12}, () => 2000 + Math.random() * 500);
                             const prices2 = Array.from({length: 12}, () => 3000 + Math.random() * 800);
@@ -870,7 +863,6 @@
                             });
                         }
 
-                // State name mapping to handle variations
                 const stateNameMapping = {
                     'UT': 'Uttarakhand', 'Uttaranchal': 'Uttarakhand',
                     'OR': 'Odisha', 'Odisha': 'Odisha', 'Orissa': 'Odisha',
@@ -891,7 +883,6 @@
                 function normalizeStateName(stateName) {
                     if (!stateName) return '';
                     const trimmed = stateName.trim();
-                    // Check if it's a code in the mapping
                     if (stateNameMapping[trimmed]) return stateNameMapping[trimmed];
                     // Check case-insensitive match in mapping values
                     for (const [key, value] of Object.entries(stateNameMapping)) {
@@ -1120,7 +1111,7 @@
                     // Render charts
                     renderFeatureImportanceChart(c);
                     renderSentimentPieChart();
-                    renderComparisonChart(); // <-- This was the fix from before
+                    renderComparisonChart(); 
 
                     // Fetch and display model performance
                     try {
