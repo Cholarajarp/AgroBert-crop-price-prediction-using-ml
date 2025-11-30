@@ -50,7 +50,9 @@ The system integrates:
 
 ## System Architecture
 
-![System Architecture Diagram](assets/system-architecture.svg)
+<div align="center">
+  <img src="https://raw.githubusercontent.com/Cholarajarp/AgroBert-crop-price-prediction-using-ml/main/assets/system-architecture.svg" alt="System Architecture Diagram" width="100%">
+</div>
 
 ---
 
@@ -58,7 +60,9 @@ The system integrates:
 
 Our platform integrates multiple data sources to ensure comprehensive market intelligence:
 
-![Data Sources Overview](assets/data-sources.svg)
+<div align="center">
+  <img src="https://raw.githubusercontent.com/Cholarajarp/AgroBert-crop-price-prediction-using-ml/main/assets/data-sources.svg" alt="Data Sources Overview" width="100%">
+</div>
 
 ---
 
