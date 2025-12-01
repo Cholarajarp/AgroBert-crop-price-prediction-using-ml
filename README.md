@@ -487,6 +487,6 @@ We extend our heartfelt thanks to:
 
 ---
 
-**Built with by the AgroBERT Development Team**
+**Built with ❤️  by the AgroBERT Development Team**
 
 *Last Updated: November 2025*
