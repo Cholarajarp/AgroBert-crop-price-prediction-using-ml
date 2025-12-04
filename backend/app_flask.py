@@ -583,7 +583,6 @@ def location_based_markets():
         }), 500
 
 @app.route("/api/v1/geolocation", methods=["POST"])
-@jwt_required()
 def geolocation():
     """Alias endpoint for location-based-markets for frontend compatibility."""
     data = request.get_json()

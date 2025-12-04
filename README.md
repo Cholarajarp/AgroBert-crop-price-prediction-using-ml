@@ -431,9 +431,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Links & Resources
 
-- **Project Repository**: [GitHub Link]
+- **Project Repository**: [https://github.com/Cholarajarp/AgroBert-crop-price-prediction-using-ml]
 - **Documentation**: [Doc Link]
-- **Live Demo**: [Demo Link]
+- **Live Demo**: [https://agrobert-crop-price-prediction-using-ml.onrender.com]
 - **Issue Tracker**: [GitHub Issues]
 
 ### References
