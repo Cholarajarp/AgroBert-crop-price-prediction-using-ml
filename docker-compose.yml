@@ -1,0 +1,173 @@
+version: '3.8'
+
+# AgroBERT: Advanced Agri-Product Price Prediction Using ML
+# Docker Compose Configuration for Multi-Container Deployment
+
+services:
+  # Main Flask Application Service
+  agrobert_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: agrobert_api
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=backend.app_flask
+      - DATABASE_URL=sqlite:///./db/agrobert.db
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-in-production}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-your-jwt-secret-key}
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+      - NEWS_API_KEY=${NEWS_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    volumes:
+      # Persistent volumes for data and logs
+      - agrobert_db:/app/db
+      - agrobert_logs:/app/logs
+      - agrobert_cache:/app/cache
+      - agrobert_models:/app/backend/models_ml/pretrained_models
+    depends_on:
+      - agrobert_db
+    networks:
+      - agrobert_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Database Service (Optional - for PostgreSQL production)
+  # agrobert_db:
+  #   image: postgres:14-alpine
+  #   container_name: agrobert_postgres
+  #   environment:
+  #     - POSTGRES_USER=${POSTGRES_USER:-agrobert}
+  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+  #     - POSTGRES_DB=${POSTGRES_DB:-agrobert_db}
+  #     - POSTGRES_INITDB_ARGS=--encoding=UTF8
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #     - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - agrobert_network
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-agrobert}"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # Lightweight SQLite Database Service (Development)
+  agrobert_db:
+    image: alpine:latest
+    container_name: agrobert_sqlite
+    volumes:
+      - agrobert_db:/data
+    command: /bin/sh -c "echo 'SQLite data volume ready'"
+    networks:
+      - agrobert_network
+    restart: unless-stopped
+
+  # Redis Cache Service (Optional - for caching)
+  # agrobert_redis:
+  #   image: redis:7-alpine
+  #   container_name: agrobert_cache
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - agrobert_network
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # Nginx Reverse Proxy (Optional - for production)
+  # agrobert_nginx:
+  #   image: nginx:alpine
+  #   container_name: agrobert_proxy
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./ssl:/etc/nginx/ssl:ro
+  #   depends_on:
+  #     - agrobert_app
+  #   networks:
+  #     - agrobert_network
+  #   restart: unless-stopped
+
+  # Monitoring Service (Optional - Prometheus)
+  # agrobert_prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: agrobert_monitoring
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #     - prometheus_data:/prometheus
+  #   command:
+  #     - '--config.file=/etc/prometheus/prometheus.yml'
+  #     - '--storage.tsdb.path=/prometheus'
+  #   networks:
+  #     - agrobert_network
+  #   restart: unless-stopped
+
+  # Logging Service (Optional - ELK Stack)
+  # agrobert_elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.0.0
+  #   container_name: agrobert_elasticsearch
+  #   environment:
+  #     - discovery.type=single-node
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #   ports:
+  #     - "9200:9200"
+  #   volumes:
+  #     - elasticsearch_data:/usr/share/elasticsearch/data
+  #   networks:
+  #     - agrobert_network
+  #   restart: unless-stopped
+
+volumes:
+  # Named volumes for persistent data
+  agrobert_db:
+    driver: local
+  agrobert_logs:
+    driver: local
+  agrobert_cache:
+    driver: local
+  agrobert_models:
+    driver: local
+  # postgres_data:
+  #   driver: local
+  # redis_data:
+  #   driver: local
+  # prometheus_data:
+  #   driver: local
+  # elasticsearch_data:
+  #   driver: local
+
+networks:
+  # Custom network for service communication
+  agrobert_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
